@@ -1,0 +1,6 @@
+fastapi
+motor
+python-dotenv
+pyjwt
+bcrypt
+pydantic[email]
