@@ -12,6 +12,7 @@ import ListingDetail from "./pages/ListingDetail";
 import OrderDetail from "./pages/OrderDetail";
 import CreateListing from "./pages/CreateListing";
 import AdminPanel from "./pages/AdminPanel";
+import HowItWorks from "./pages/HowItWorks";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/order/:id" element={<OrderDetail />} />
             <Route path="/sell" element={<CreateListing />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
           </Routes>
         </div>
         <Toaster theme="dark" />

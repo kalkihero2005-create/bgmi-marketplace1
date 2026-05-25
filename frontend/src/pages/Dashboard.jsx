@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
-import { Wallet, Plus, ShoppingBag, List, Receipt } from "@phosphor-icons/react";
+import { Wallet, Plus, ShoppingBag, List, Receipt, X, QrCode, Bank as BankIcon, Question } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
@@ -10,6 +10,8 @@ export default function Dashboard() {
   const [tab, setTab] = useState("txns");
   const [data, setData] = useState({ txns: [], orders: [], listings: [] });
   const [topupAmt, setTopupAmt] = useState(500);
+  const [showTopupModal, setShowTopupModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("upi");
 
   const loadData = async () => {
     if (!user) return;
@@ -30,16 +32,23 @@ export default function Dashboard() {
       await api.post("/wallet/topup", { amount: Number(topupAmt) });
       await refresh();
       loadData();
-      toast.success(`₹${topupAmt} added!`);
-    } catch (e) { toast.error("Failed."); }
+      setShowTopupModal(false);
+      toast.success(`₹${topupAmt} added to wallet!`);
+    } catch (e) { toast.error("Failed to add funds."); }
   };
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <div className="mb-10">
-        <div className="font-mono text-xs uppercase tracking-[0.3em] text-[#CCFF00] mb-2 font-bold">// CONTROL ROOM</div>
-        <h1 className="font-heading text-5xl font-black uppercase text-white tracking-tighter">DASHBOARD</h1>
-        <p className="text-zinc-500 text-xs mt-3 uppercase font-mono tracking-widest text-white">Welcome back, <span className="font-bold">{user?.name}</span></p>
+      <div className="mb-10 flex justify-between items-end">
+        <div>
+          <div className="font-mono text-xs uppercase tracking-[0.3em] text-[#CCFF00] mb-2 font-bold">// CONTROL ROOM</div>
+          <h1 className="font-heading text-5xl font-black uppercase text-white tracking-tighter">DASHBOARD</h1>
+          <p className="text-zinc-500 text-xs mt-3 uppercase font-mono tracking-widest text-white">Welcome back, <span className="font-bold">{user?.name}</span></p>
+        </div>
+        <Link to="/how-it-works" className="flex items-center gap-2 bg-black border border-white/10 px-6 py-3 rounded-sm hover:border-[#CCFF00]/40 transition group">
+          <Question size={20} className="text-[#CCFF00]" weight="bold" />
+          <span className="font-mono text-[10px] uppercase tracking-widest text-white">HOW TO USE</span>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
@@ -48,7 +57,7 @@ export default function Dashboard() {
            <div className="font-heading text-7xl font-black text-white mb-10 flex items-baseline"><span className="text-4xl mr-2 text-zinc-600">₹</span>{user?.wallet_balance || 0}</div>
            <div className="flex gap-4 max-w-md relative z-10">
               <input type="number" className="bg-black border border-white/10 px-4 py-3 text-white w-24 outline-none font-mono text-sm focus:border-[#CCFF00]" value={topupAmt} onChange={e=>setTopupAmt(e.target.value)} />
-              <button onClick={handleTopup} className="bg-[#CCFF00] text-black font-black uppercase text-[11px] px-8 py-3 rounded-sm hover:bg-[#D4FF33] transition-all">ADD FUNDS</button>
+              <button onClick={()=>setShowTopupModal(true)} className="bg-[#CCFF00] text-black font-black uppercase text-[11px] px-8 py-3 rounded-sm hover:bg-[#D4FF33] transition-all">ADD FUNDS</button>
            </div>
         </div>
 
@@ -83,7 +92,69 @@ export default function Dashboard() {
                <div className="text-[#CCFF00] font-bold font-mono">₹{o.price}</div>
             </Link>
          ))}
+         {tab === "listings" && data.listings.map(l => (
+            <Link to={`/listing/${l.id}`} key={l.id} className="p-6 border-b border-white/5 flex justify-between items-center hover:bg-white/[0.01]">
+               <div><div className="text-white font-bold text-sm uppercase">{l.title}</div><div className="text-[10px] text-zinc-600 font-mono mt-1 uppercase">{l.status}</div></div>
+               <div className="text-[#CCFF00] font-bold font-mono">₹{l.price}</div>
+            </Link>
+         ))}
       </div>
+
+      {showTopupModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-6">
+          <div className="bg-[#0a0a0a] border border-white/10 p-8 rounded-sm max-w-md w-full">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="font-heading text-2xl font-black uppercase text-white">ADD FUNDS</h2>
+              <button onClick={()=>setShowTopupModal(false)}><X size={24} className="text-zinc-500 hover:text-white" /></button>
+            </div>
+
+            <div className="mb-6">
+              <label className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2 block">AMOUNT</label>
+              <div className="flex items-center gap-4">
+                <input type="number" className="bg-black border border-white/10 px-4 py-3 text-white w-full outline-none font-mono text-sm focus:border-[#CCFF00]" value={topupAmt} onChange={e=>setTopupAmt(e.target.value)} />
+                <span className="text-[#CCFF00] font-bold font-mono text-xl">₹</span>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <label className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-4 block">PAYMENT METHOD</label>
+              <div className="grid grid-cols-2 gap-4">
+                <button onClick={()=>setPaymentMethod("upi")} className={`p-6 border-2 rounded-sm transition-all ${paymentMethod === "upi" ? "border-[#CCFF00] bg-[#CCFF00]/5" : "border-white/10 hover:border-white/20"}`}>
+                  <QrCode size={32} className={paymentMethod === "upi" ? "text-[#CCFF00]" : "text-zinc-500"} weight="bold" />
+                  <div className="font-mono text-[10px] uppercase tracking-widest mt-2 text-white">UPI</div>
+                </button>
+                <button onClick={()=>setPaymentMethod("bank")} className={`p-6 border-2 rounded-sm transition-all ${paymentMethod === "bank" ? "border-[#CCFF00] bg-[#CCFF00]/5" : "border-white/10 hover:border-white/20"}`}>
+                  <BankIcon size={32} className={paymentMethod === "bank" ? "text-[#CCFF00]" : "text-zinc-500"} weight="bold" />
+                  <div className="font-mono text-[10px] uppercase tracking-widest mt-2 text-white">BANK TRANSFER</div>
+                </button>
+              </div>
+            </div>
+
+            {paymentMethod === "upi" && (
+              <div className="mb-8 bg-black border border-white/10 p-6 rounded-sm text-center">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-4">DEMO UPI ID</div>
+                <div className="text-[#CCFF00] font-bold font-mono text-lg mb-4">bgmi@upi</div>
+                <p className="text-zinc-500 text-[10px] font-mono uppercase">Scan QR or use UPI ID</p>
+              </div>
+            )}
+
+            {paymentMethod === "bank" && (
+              <div className="mb-8 bg-black border border-white/10 p-6 rounded-sm">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-4">DEMO BANK DETAILS</div>
+                <div className="space-y-2 text-white font-mono text-xs">
+                  <p><span className="text-zinc-500">A/C:</span> 1234567890</p>
+                  <p><span className="text-zinc-500">IFSC:</span> ABCD0123456</p>
+                  <p><span className="text-zinc-500">NAME:</span> BGMI MARKETPLACE</p>
+                </div>
+              </div>
+            )}
+
+            <button onClick={handleTopup} className="w-full bg-[#CCFF00] text-black font-black uppercase text-[11px] py-4 rounded-sm hover:bg-[#D4FF33] transition-all">
+              CONFIRM PAYMENT (DEMO)
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
