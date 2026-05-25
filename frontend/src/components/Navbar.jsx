@@ -73,7 +73,7 @@ export default function Navbar() {
                         </button>
 
                         <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold uppercase text-[#FF3366] hover:bg-[#FF3366] hover:text-white transition-all text-left border-t border-white/5 mt-2 pt-4 font-sans">
-                          <SignOut size={20} weight="bold" /> Terminate Session
+                          <SignOut size={20} weight="bold" /> Logout
                         </button>
                       </motion.div>
                     )}
@@ -83,7 +83,7 @@ export default function Navbar() {
             ) : (
               <div className="flex gap-4">
                 <Link to="/login" className="text-white font-bold uppercase text-[10px] px-4 py-2 hover:text-[#CCFF00]">Login</Link>
-                <Link to="/register" className="bg-[#CCFF00] text-black font-black uppercase text-[10px] px-6 py-2.5 rounded-sm hover:bg-[#D4FF33]">Join Squad</Link>
+                <Link to="/register" className="bg-[#CCFF00] text-black font-black uppercase text-[10px] px-6 py-2.5 rounded-sm hover:bg-[#D4FF33]">Sign Up</Link>
               </div>
             )}
           </div>
@@ -100,8 +100,8 @@ export default function Navbar() {
             className="fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center text-center p-6"
           >
             <div className="w-16 h-1 bg-[#FF3366] animate-pulse mb-4" />
-            <div className="font-heading text-xl font-black text-white uppercase tracking-widest">SHUTTING DOWN SYSTEM...</div>
-            <div className="font-mono text-[#FF3366] text-[10px] mt-2 uppercase">Wiping Session Data</div>
+            <div className="font-heading text-xl font-black text-white uppercase tracking-widest">LOGGING OUT...</div>
+            <div className="font-mono text-[#FF3366] text-[10px] mt-2 uppercase">Please Wait</div>
           </motion.div>
         )}
       </AnimatePresence>

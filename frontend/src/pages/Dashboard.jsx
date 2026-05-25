@@ -48,7 +48,7 @@ export default function Dashboard() {
            <div className="font-heading text-7xl font-black text-white mb-10 flex items-baseline"><span className="text-4xl mr-2 text-zinc-600">₹</span>{user?.wallet_balance || 0}</div>
            <div className="flex gap-4 max-w-md relative z-10">
               <input type="number" className="bg-black border border-white/10 px-4 py-3 text-white w-24 outline-none font-mono text-sm focus:border-[#CCFF00]" value={topupAmt} onChange={e=>setTopupAmt(e.target.value)} />
-              <button onClick={handleTopup} className="bg-[#CCFF00] text-black font-black uppercase text-[11px] px-8 py-3 rounded-sm hover:bg-[#D4FF33] transition-all">ADD FUNDS (TEST)</button>
+              <button onClick={handleTopup} className="bg-[#CCFF00] text-black font-black uppercase text-[11px] px-8 py-3 rounded-sm hover:bg-[#D4FF33] transition-all">ADD FUNDS</button>
            </div>
         </div>
 
