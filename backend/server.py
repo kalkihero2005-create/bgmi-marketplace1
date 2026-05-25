@@ -128,22 +128,21 @@ async def get_listings(
 ):
     query = {"status": "active"}
     if seller_id:
-        query = {"seller_id": seller_id}
-    else:
-        if q:
-            query["$or"] = [
-                {"title": {"$regex": q, "$options": "i"}},
-                {"description": {"$regex": q, "$options": "i"}}
-            ]
-        if tier:
-            query["tier"] = {"$regex": tier, "$options": "i"}
-        if min_price is not None:
-            query["price"] = {"$gte": min_price}
-        if max_price is not None:
-            if "price" in query:
-                query["price"]["$lte"] = max_price
-            else:
-                query["price"] = {"$lte": max_price}
+        query["seller_id"] = seller_id
+    if q:
+        query["$or"] = [
+            {"title": {"$regex": q, "$options": "i"}},
+            {"description": {"$regex": q, "$options": "i"}}
+        ]
+    if tier:
+        query["tier"] = {"$regex": tier, "$options": "i"}
+    if min_price is not None:
+        query["price"] = {"$gte": min_price}
+    if max_price is not None:
+        if "price" in query:
+            query["price"]["$lte"] = max_price
+        else:
+            query["price"] = {"$lte": max_price}
     
     sort_order = [("created_at", -1)]
     if sort == "price_asc":
